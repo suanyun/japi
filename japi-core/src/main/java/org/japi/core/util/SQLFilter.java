@@ -1,0 +1,46 @@
+package org.japi.core.util;
+
+
+import org.springframework.util.StringUtils;
+
+/**
+ * Description: SQL过滤，防止SQL注入
+ *
+ * @author dbdu
+ */
+public class SQLFilter {
+
+    /**
+     * Description: 检测是否包含非法的关键字，
+     * true 包含非法；false 不包含
+     *
+     * @param [sql]
+     * @return java.lang.Boolean
+     * @author dbdu
+     */
+    public static Boolean sqlInject(String sql) {
+        if (CommUtil.isEmptyString(sql)) {
+            return false;
+        }
+        // 去除'|"|;|\字符
+        sql = StringUtils.replace(sql, "'", "");
+        sql = StringUtils.replace(sql, "\"", "");
+        sql = StringUtils.replace(sql, ";", "");
+        sql = StringUtils.replace(sql, "\\", "");
+
+        //转换成小写
+        sql = sql.toLowerCase();
+
+        // 非法字符
+        String[] keywords = {"master ", "truncate ", "insert ", "select ", "delete ", "update ", "declare ", "alter ", "drop "};
+
+        //判断是否包含非法字符
+        for (String keyword : keywords) {
+            if (sql.indexOf(keyword) != -1) {
+                return true;  //包含非法字符
+            }
+        }
+
+        return false;
+    }
+}
